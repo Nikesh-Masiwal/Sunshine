@@ -36,6 +36,8 @@ import java.util.List;
  */
 public class ForecastFragment extends Fragment {
 
+    private ArrayAdapter<String> weatherAdapter;
+
     public ForecastFragment() {
     }
 
@@ -61,7 +63,7 @@ public class ForecastFragment extends Fragment {
         List<String> weekForecast = new ArrayList<>( Arrays.asList(weatherData));
 
         //Defining ArrayAdapter
-        ArrayAdapter<String> weatherAdapter = new ArrayAdapter<>(
+        weatherAdapter = new ArrayAdapter<String>(
                 //Context of Fragment
                 getActivity(),
                 //Reference to List Layout
@@ -211,12 +213,13 @@ public class ForecastFragment extends Fragment {
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
 
-            for (String s : resultStrs) {
+            /*for (String s : resultStrs) {
                 Log.v(LOG_TAG, "Forecast entry: " + s);
-            }
+            }*/
             return resultStrs;
 
         }
+
 
 
 
@@ -262,9 +265,8 @@ public class ForecastFragment extends Fragment {
 
                 URL url = new URL(builtUri.toString());
 
-                Log.v(LOG_TAG, "BUILT URI "+ url);
 
-                //URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7");
+
 
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -293,7 +295,9 @@ public class ForecastFragment extends Fragment {
                     return null;
                 }
                 forecastJsonStr = buffer.toString();
-                Log.v(LOG_TAG, "JSONDATA FROM SERVER "+ forecastJsonStr);
+
+
+                /*Log.v(LOG_TAG, "JSONDATA FROM SERVER "+ forecastJsonStr);
 
                 JSONObject weatherJSONObj = new JSONObject(forecastJsonStr);
 
@@ -310,7 +314,7 @@ public class ForecastFragment extends Fragment {
                     Log.i(LOG_TAG, "MAX "+ max_temp);
 
 
-                }
+                }*/
 
 
 
@@ -319,8 +323,6 @@ public class ForecastFragment extends Fragment {
                 // If the code didn't successfully get the weather data, there's no point in attemping
                 // to parse it.
                 return null;
-            } catch (JSONException e) {
-                e.printStackTrace();
             } finally{
                 if (urlConnection != null) {
                     urlConnection.disconnect();
@@ -345,6 +347,24 @@ public class ForecastFragment extends Fragment {
 
             return null;
         }
+
+
+        @Override
+        protected void onPostExecute(String[] result) {
+            super.onPostExecute(result);
+
+            if (result != null) {
+                weatherAdapter.clear();
+
+                weatherAdapter.addAll(result);
+
+
+            }
+
+
+
+        }
+
     }
 
 
