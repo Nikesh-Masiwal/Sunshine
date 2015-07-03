@@ -1,8 +1,11 @@
 package nanodegree.udacity.sun;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.text.format.Time;
@@ -40,6 +43,7 @@ import java.util.List;
 public class ForecastFragment extends Fragment {
 
     private ArrayAdapter<String> weatherAdapter;
+    String preferred_unit;
 
     public ForecastFragment() {
     }
@@ -57,13 +61,6 @@ public class ForecastFragment extends Fragment {
         //Inflating fragment layout
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        // String array to push it to Adapter to populate fake data
-        String[] weatherData = {"Today - Sunny 85/32","Tomorrow - Cloudly 87/30","Friday - Light Rain 85/29",
-                "Saturday - Hot 85/34","Sunday - Rain 85/26","Monday - Sunny 85/32","Tuesday - Drizzle 85/30"};
-
-
-        //Converting to ArrayList
-        List<String> weekForecast = new ArrayList<>( Arrays.asList(weatherData));
 
         //Defining ArrayAdapter
         weatherAdapter = new ArrayAdapter<String>(
@@ -74,7 +71,7 @@ public class ForecastFragment extends Fragment {
                 //Reference to TextView we defined in list_item layout
                 R.id.list_item_forecast_textview,
                 //Fake Array we defined above
-                weekForecast);
+                new ArrayList<String>());
 
 
 
@@ -122,15 +119,58 @@ public class ForecastFragment extends Fragment {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
 
-            FetchWeatherTask weatherTask = new FetchWeatherTask();
+            updateWeather();
 
-            weatherTask.execute("400067");
+            return true;
+        }
 
+        if (id == R.id.action_maplocation) {
+
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String location = prefs.getString(getString(R.string.pref_location_key),
+                    getString(R.string.pref_location_default));
+
+            Uri locateUri = Uri.parse("geo:0,0?").buildUpon()
+                    .appendQueryParameter("q", location)
+                    .build();
+
+            Intent intent = new Intent(Intent.ACTION_VIEW, locateUri);
+            startActivity(intent);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
+    }
+
+    private void updateWeather(){
+
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+
+//            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+//            String defaultValue = getResources().getString(R.string.pref_location_default);
+//            String locationFromPref = sharedPref.getString("location", defaultValue);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = prefs.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+
+        SharedPreferences pref_units = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        preferred_unit = pref_units.getString(getString(R.string.pref_units_key),
+                getString(R.string.pref_units_default));
+
+
+        weatherTask.execute(location);
+
+
+
+    }
+
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
@@ -154,8 +194,31 @@ public class ForecastFragment extends Fragment {
             long roundedHigh = Math.round(high);
             long roundedLow = Math.round(low);
 
+            roundedHigh = getTempInPreferredUnits(roundedHigh);
+            roundedLow = getTempInPreferredUnits(roundedLow);
+
             String highLowStr = roundedHigh + "/" + roundedLow;
             return highLowStr;
+        }
+
+
+        private long getTempInPreferredUnits(long currentTemp){
+
+            Log.d("Units","Checking");
+
+            if (preferred_unit.equals("metric")){
+                Log.d("Units","Metric");
+                return currentTemp;
+
+            }else{
+                Log.d("Units","Imperial");
+                long farenheit_temp = (long)(currentTemp*1.8+32);
+
+                return farenheit_temp;
+            }
+
+
+
         }
 
         /**
