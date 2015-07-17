@@ -74,7 +74,6 @@ public class ForecastFragment extends Fragment {
                 new ArrayList<String>());
 
 
-
         //Defining List View, referencing with findViewByID
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
 
@@ -435,6 +434,7 @@ public class ForecastFragment extends Fragment {
                 weatherAdapter.clear();
 
                 weatherAdapter.addAll(result);
+
 
 
             }

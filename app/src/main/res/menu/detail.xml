@@ -4,4 +4,13 @@
     tools:context="nanodegree.udacity.sun.DetailActivity">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
+
+    <item
+            android:id="@+id/action_share"
+            android:icon="@drawable/ic_action_share"
+           android:title="Share"
+            app:actionProviderClass="android.support.v7.widget.ShareActionProvider"
+            app:showAsAction="always" />
+
+
 </menu>
