@@ -29,7 +29,7 @@ public class DetailActivity extends ActionBarActivity {
                     .commit();
         }
     }
-    
+
 
     /**
      * A placeholder fragment containing a simple view.
