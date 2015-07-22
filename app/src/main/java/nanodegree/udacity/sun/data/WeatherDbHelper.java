@@ -56,8 +56,19 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
                 " UNIQUE (" + WeatherContract.WeatherEntry.COLUMN_DATE + ", " +
                 WeatherContract.WeatherEntry.COLUMN_LOC_KEY + ") ON CONFLICT REPLACE);";
 
+        final String SQL_CREATE_LOCATION_TABLE = "CREATE TABLE "+ WeatherContract.LocationEntry.TABLE_NAME + " (" +
+
+                WeatherContract.LocationEntry._ID+" INTEGER PRIMARY KEY,"+
+                WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " TEXT UNIQUE NOT NULL" +
+                WeatherContract.LocationEntry.COLUMN_CITY_NAME + TEXT_TYPE + COMMA_SEP +
+                WeatherContract.LocationEntry.COLUMN_COORD_LAT + REAL_NOT_NULL_TYPE + COMMA_SEP +
+                WeatherContract.LocationEntry.COLUMN_COORD_LONG +REAL_NOT_NULL_TYPE + COMMA_SEP +
+
+                ");";
+
 
                 db.execSQL(SQL_CREATE_WEATHER_TABLE);
+               db.execSQL(SQL_CREATE_LOCATION_TABLE);
 
     }
 
