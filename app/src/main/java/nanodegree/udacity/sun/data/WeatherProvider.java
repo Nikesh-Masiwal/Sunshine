@@ -117,29 +117,6 @@ public class WeatherProvider extends ContentProvider {
     }
 
 
-    private Cursor getWeather(Uri uri, String[] projection,String sortOrder){
-
-        return sWeatherByLocationSettingQueryBuilder.query(mOpenHelper.getReadableDatabase(),
-                projection,
-                sWeatherSelectionQuery,
-                null,
-                null,
-                null,
-                sortOrder);
-
-    }
-
-    private Cursor getLocation(Uri uri, String[] projection,String sortOrder){
-
-        return sWeatherByLocationSettingQueryBuilder.query(mOpenHelper.getReadableDatabase(),
-                projection,
-                sLocationSelectionQuery,
-                null,
-                null,
-                null,
-                sortOrder);
-
-    }
 
     /*
         Students: Here is where you need to create the UriMatcher. This UriMatcher will
@@ -313,26 +290,20 @@ public class WeatherProvider extends ContentProvider {
 
         int rowsDeleted;
 
+        if (null == selection) selection = "1";
+
         // Student: Use the uriMatcher to match the WEATHER and LOCATION URI's we are going to
         // handle.  If it doesn't match these, throw an UnsupportedOperationException.
 
         switch (match) {
             case WEATHER: {
 
-                rowsDeleted = db.delete(WeatherContract.WeatherEntry.TABLE_NAME, null, selectionArgs);
-                if ( rowsDeleted != 0 )
-                    getContext().getContentResolver().notifyChange(uri, null);
-                else
-                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                rowsDeleted = db.delete(WeatherContract.WeatherEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             }
             case LOCATION: {
 
-                rowsDeleted = db.delete(WeatherContract.LocationEntry.TABLE_NAME, null, selectionArgs);
-                if ( rowsDeleted != 0 )
-                    getContext().getContentResolver().notifyChange(uri, null);
-                else
-                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                rowsDeleted = db.delete(WeatherContract.LocationEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             }
             default:
@@ -343,7 +314,9 @@ public class WeatherProvider extends ContentProvider {
         // the uri listeners (using the content resolver) if the rowsDeleted != 0 or the selection
         // is null.
         // Oh, and you should notify the listeners here.
-
+        if (rowsDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
         // Student: return the actual rows deleted
         return rowsDeleted;
     }

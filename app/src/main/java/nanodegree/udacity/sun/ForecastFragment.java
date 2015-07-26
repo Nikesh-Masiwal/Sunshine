@@ -149,7 +149,11 @@ public class ForecastFragment extends Fragment {
 
     private void updateWeather(){
 
-        FetchWeatherTask weatherTask = new FetchWeatherTask();
+        //FetchWeatherTask weatherTask = new FetchWeatherTask();
+
+
+        nanodegree.udacity.sun.FetchWeatherTask weatherTask =
+                new nanodegree.udacity.sun.FetchWeatherTask(getActivity(),weatherAdapter);
 
 //            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
 //            String defaultValue = getResources().getString(R.string.pref_location_default);
